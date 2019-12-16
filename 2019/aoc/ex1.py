@@ -96,26 +96,11 @@ masses = """142388
 75717
 136114
 106814
-89913	
+89913
 119734""".split('\n')
-
-# Part 1
 
 total_fuel = 0
 for m in masses:
-	total_fuel += int(m)//3 -2
-
-print(total_fuel)
-
-# Part 2
-def get_fuel(mass):
-	fuel = mass//3 - 2
-	if fuel <= 0:
-		return 0
-	return fuel + get_fuel(fuel)
-
-total_fuel = 0 
-for m in masses:
-	total_fuel += get_fuel(int(m))
+    total_fuel += int(m) // 3 - 2
 
 print(total_fuel)

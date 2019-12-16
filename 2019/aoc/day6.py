@@ -3,8 +3,8 @@
 # ya know have fun with it and all
 
 with open('day6.txt', 'r') as f:
-	raw_data  = f.read().split('\n')
-	f.close()
+    raw_data = f.read().split('\n')
+    f.close()
 
 # raw_data = """COM)B
 # B)C
@@ -34,18 +34,19 @@ with open('day6.txt', 'r') as f:
 
 orbits = dict()
 for orbit in raw_data:
-	e1, e2 = orbit.split(')')
-	buddies = orbits.get(e1, [])
-	buddies.append(e2)
-	orbits[e1] = buddies
+    e1, e2 = orbit.split(')')
+    buddies = orbits.get(e1, [])
+    buddies.append(e2)
+    orbits[e1] = buddies
 
 
 def get_orbits(origin, something=0):
-	o = orbits.get(origin, [])
-	num = something
-	for e in o:
-		num += get_orbits(e, something+1)
-	return num
+    o = orbits.get(origin, [])
+    num = something
+    for e in o:
+        num += get_orbits(e, something + 1)
+    return num
+
 
 # Part 1
 # print(get_orbits('COM'))
@@ -56,29 +57,30 @@ def get_orbits(origin, something=0):
 
 
 def pathfind(start, end):
-	os = orbits.get(start, [])
-	for e in os:
-		if e == end:
-			return [start]
-		p = pathfind(e, end)
-		if not p:
-			continue
-		return [start] + p
+    os = orbits.get(start, [])
+    for e in os:
+        if e == end:
+            return [start]
+        p = pathfind(e, end)
+        if not p:
+            continue
+        return [start] + p
 
-	return None
+    return None
 
-me = pathfind('COM', 'YOU') 
+
+me = pathfind('COM', 'YOU')
 santa = pathfind('COM', 'SAN')
 
 inter = 0
 for i in range(len(me)):
-	if me[i] == 'SAN' or santa[i] == 'YOU':
-		print('yoyo')
-		inter = i
-		break
-	if me[i] != santa[i]:
-		inter = i-1
-		break
+    if me[i] == 'SAN' or santa[i] == 'YOU':
+        print('yoyo')
+        inter = i
+        break
+    if me[i] != santa[i]:
+        inter = i - 1
+        break
 print(inter, me[inter], santa[inter])
 print(me[inter:], santa[inter:])
-print(len(me[inter+1:]) + len(santa[inter+1:]))
+print(len(me[inter + 1:]) + len(santa[inter + 1:]))

@@ -4,15 +4,18 @@ class Memory(list):
         if missing > 0:
             self.extend([0] * missing)
         super(Memory, self).__setitem__(index, value)
+
     def __getitem__(self, index):
         try:
             return super(Memory, self).__getitem__(index)
         except IndexError:
             return 0
 
+
 class Interupt:
     def __await__(self):
         return iter([1])
+
 
 class Socket:
     def __init__(self, content=[]):
@@ -30,6 +33,7 @@ class Socket:
             await Interupt()
         return self.content.pop(0)
 
+
 class Task:
     def __init__(self, input=None, output=None):
         if isinstance(input, list):
@@ -41,9 +45,11 @@ class Task:
     async def run(self):
         pass
 
+
 class FSM(Task):
     def __init__(self, input=None, output=None):
         super(FSM, self).__init__(input, output)
+
 
 class Program(Task):
     def __init__(self, memory, input=None, output=None):
@@ -58,8 +64,8 @@ class Program(Task):
     def get_data(self, pos, mode=1):
         p = self.memory[pos]
         return (
-            p if mode == 1 
-            else self.memory[p] if mode == 0 
+            p if mode == 1
+            else self.memory[p] if mode == 0
             else self.memory[self.relative + p]
         )
 
@@ -85,20 +91,19 @@ class Program(Task):
             99: (self.halt, 0, 1)
         }
 
-    
     # Opcode 1 - length 4
     async def add(self, pos, modes):
-        p1 = self.get_data(pos+1, modes[2])
-        p2 = self.get_data(pos+2, modes[1])
-        p3 = self.get_data(pos+3)
+        p1 = self.get_data(pos + 1, modes[2])
+        p2 = self.get_data(pos + 2, modes[1])
+        p3 = self.get_data(pos + 3)
         self.set_data(p3, p1 + p2, modes[0])
         return pos + 4
 
     # Opcode 2 - length 4
     async def mul(self, pos, modes):
-        p1 = self.get_data(pos+1, modes[2])
-        p2 = self.get_data(pos+2, modes[1])
-        p3 = self.get_data(pos+3)
+        p1 = self.get_data(pos + 1, modes[2])
+        p2 = self.get_data(pos + 2, modes[1])
+        p3 = self.get_data(pos + 3)
         self.set_data(p3, p1 * p2, modes[0])
         return pos + 4
 
@@ -106,57 +111,57 @@ class Program(Task):
     async def do_input(self, pos, modes):
         val = await self.input.read()
 
-        p = self.get_data(pos+1)
+        p = self.get_data(pos + 1)
         self.set_data(p, val, modes[0])
-        return pos+2
+        return pos + 2
 
     # Opcode 4 - length 2
     async def do_output(self, pos, modes):
-        p = self.get_data(pos+1, modes[0])
-        
+        p = self.get_data(pos + 1, modes[0])
+
         await self.output.write(p)
 
-        return pos+2
+        return pos + 2
 
     # Opcode 5 - length 3
     async def jump_if_true(self, pos, modes):
-        p1 = self.get_data(pos+1, modes[1])
-        p2 = self.get_data(pos+2, modes[0])
+        p1 = self.get_data(pos + 1, modes[1])
+        p2 = self.get_data(pos + 2, modes[0])
         if p1 != 0:
             return p2
-        return pos+3
+        return pos + 3
 
     # Opcode 6 - length 3
     async def jump_if_false(self, pos, modes):
-        p1 = self.get_data(pos+1, modes[1])
-        p2 = self.get_data(pos+2, modes[0])
+        p1 = self.get_data(pos + 1, modes[1])
+        p2 = self.get_data(pos + 2, modes[0])
         if p1 == 0:
             return p2
-        return pos+3
+        return pos + 3
 
     # Opcode 7 - length 4
     async def less_than(self, pos, modes):
-        p1 = self.get_data(pos+1, modes[2])
-        p2 = self.get_data(pos+2, modes[1])
-        p3 = self.get_data(pos+3)
+        p1 = self.get_data(pos + 1, modes[2])
+        p2 = self.get_data(pos + 2, modes[1])
+        p3 = self.get_data(pos + 3)
         val = 1 if p1 < p2 else 0
         self.set_data(p3, val, modes[0])
-        return pos+4
+        return pos + 4
 
     # Opcode 8 - length 4
     async def equals(self, pos, modes):
-        p1 = self.get_data(pos+1, modes[2])
-        p2 = self.get_data(pos+2, modes[1])
-        p3 = self.get_data(pos+3)
+        p1 = self.get_data(pos + 1, modes[2])
+        p2 = self.get_data(pos + 2, modes[1])
+        p3 = self.get_data(pos + 3)
         val = 1 if p1 == p2 else 0
         self.set_data(p3, val, modes[0])
-        return pos+4
+        return pos + 4
 
     # Opcode 9 - length 2
     async def adjust_relative(self, pos, modes):
-        p = self.get_data(pos+1, modes[0])
+        p = self.get_data(pos + 1, modes[0])
         self.relative += p
-        return pos+2
+        return pos + 2
 
     # Opcode 99 - Returns -1 which is the halt code 
     async def halt(self, pos, modes=[]):
@@ -173,7 +178,7 @@ class Program(Task):
     # Adds leading 0s to modes - Big assumption that len(modes) <= length
     def format_modes(self, opcode, length):
         modes = [int(m) for m in str(opcode // 100)]
-        return [0]*(length - len(modes)) + modes
+        return [0] * (length - len(modes)) + modes
 
     def parse_opcode(self, opcode):
         op = opcode % 100
@@ -182,7 +187,7 @@ class Program(Task):
 
 
 def run_tasks(tasks):
-        running = [task.run() for task in tasks]
+    running = [task.run() for task in tasks]
     while len(running):
         for i, task in enumerate(running):
             try:
@@ -190,7 +195,6 @@ def run_tasks(tasks):
             except StopIteration:
                 running.pop(i)
 
+
 # For backwards compatibility
 run_programs = run_tasks
-
-

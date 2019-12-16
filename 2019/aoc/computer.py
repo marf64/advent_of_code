@@ -62,21 +62,21 @@ class Computer:
 
     # Adds leading 0s to modes - Big assumption that len(modes) <= length
     def format_modes(self, modes, length):
-        return [0]*(length - len(modes)) + modes
-    
+        return [0] * (length - len(modes)) + modes
+
     # Opcode 1 - length 4
     def add(self, pos, modes):
-        p1 = self.get_data(pos+1, modes[1])
-        p2 = self.get_data(pos+2, modes[0])
-        p3 = self.get_data(pos+3)
+        p1 = self.get_data(pos + 1, modes[1])
+        p2 = self.get_data(pos + 2, modes[0])
+        p3 = self.get_data(pos + 3)
         self.set_data(p3, p1 + p2)
         return pos + 4
 
     # Opcode 2 - length 4
     def mul(self, pos, modes):
-        p1 = self.get_data(pos+1, modes[1])
-        p2 = self.get_data(pos+2, modes[0])
-        p3 = self.get_data(pos+3)
+        p1 = self.get_data(pos + 1, modes[1])
+        p2 = self.get_data(pos + 2, modes[0])
+        p3 = self.get_data(pos + 3)
         self.set_data(p3, p1 * p2)
         return pos + 4
 
@@ -87,53 +87,53 @@ class Computer:
             return pos
 
         val = self.input.pop(0)
-        p = self.get_data(pos+1)
+        p = self.get_data(pos + 1)
         self.set_data(p, val)
-        return pos+2
+        return pos + 2
 
     # Opcode 4 - length 2
     def do_output(self, pos, modes):
-        p = self.get_data(pos+1, modes[0])
+        p = self.get_data(pos + 1, modes[0])
         self.output.append(p)
 
         for cb in self.output_callbacks:
             cb(self.output)
 
-        return pos+2
+        return pos + 2
 
     # Opcode 5 - length 3
     def jump_if_true(self, pos, modes):
-        p1 = self.get_data(pos+1, modes[1])
-        p2 = self.get_data(pos+2, modes[0])
+        p1 = self.get_data(pos + 1, modes[1])
+        p2 = self.get_data(pos + 2, modes[0])
         if p1 != 0:
             return p2
-        return pos+3
+        return pos + 3
 
     # Opcode 6 - length 3
     def jump_if_false(self, pos, modes):
-        p1 = self.get_data(pos+1, modes[1])
-        p2 = self.get_data(pos+2, modes[0])
+        p1 = self.get_data(pos + 1, modes[1])
+        p2 = self.get_data(pos + 2, modes[0])
         if p1 == 0:
             return p2
-        return pos+3
+        return pos + 3
 
     # Opcode 7 - length 4
     def less_than(self, pos, modes):
-        p1 = self.get_data(pos+1, modes[1])
-        p2 = self.get_data(pos+2, modes[0])
-        p3 = self.get_data(pos+3)
+        p1 = self.get_data(pos + 1, modes[1])
+        p2 = self.get_data(pos + 2, modes[0])
+        p3 = self.get_data(pos + 3)
         val = 1 if p1 < p2 else 0
         self.set_data(p3, val)
-        return pos+4
+        return pos + 4
 
     # Opcode 8 - length 4
     def equals(self, pos, modes):
-        p1 = self.get_data(pos+1, modes[1])
-        p2 = self.get_data(pos+2, modes[0])
-        p3 = self.get_data(pos+3)
+        p1 = self.get_data(pos + 1, modes[1])
+        p2 = self.get_data(pos + 2, modes[0])
+        p3 = self.get_data(pos + 3)
         val = 1 if p1 == p2 else 0
         self.set_data(p3, val)
-        return pos+4
+        return pos + 4
 
     # Opcode 99 - Returns -1 which is the halt code 
     def halt(self, pos, modes=[]):
